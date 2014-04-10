@@ -59,12 +59,14 @@ class Adapter {
             return;
         } catch (ClassNotFoundException e) {
         }
+        /*
         try {
             Class.forName("android.hardware.usb.UsbManager");
             support_ = Support.LEGACY;
             return;
         } catch (ClassNotFoundException e) {
         }
+        */
         throw new NoRuntimeSupportException("No support for USB accesory mode.");
     }
 
@@ -72,8 +74,10 @@ class Adapter {
         switch (support_) {
             case NEW:
                 return getManagerNew(wrapper);
+                /*
             case LEGACY:
                 return getManagerLegacy(wrapper);
+                */
             default:
                 return null;
         }
@@ -86,10 +90,12 @@ class Adapter {
         return new NewUsbManager(manager);
     }
 
+    /*
     private AbstractUsbManager getManagerLegacy(ContextWrapper wrapper) {
         final android.hardware.usb.UsbManager manager = (UsbManager) wrapper.getSystemService(Context.USB_SERVICE);
         return new LegacyUsbManager(manager);
     }
+    */
 
     private enum Support {
         NEW, LEGACY, NONE
@@ -123,6 +129,7 @@ class Adapter {
         }
     }
 
+    /*
     private static final class LegacyUsbManager extends AbstractUsbManager {
         private final android.hardware.usb.UsbManager manager_;
 
@@ -166,6 +173,7 @@ class Adapter {
             return result;
         }
     }
+    */
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     private static final class NewUsbManager extends AbstractUsbManager {
