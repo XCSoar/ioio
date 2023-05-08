@@ -113,12 +113,6 @@ class IncapImpl extends AbstractPin implements DataModuleListener, PulseInput {
     }
 
     @Override
-    public synchronized float waitPulseGetDuration() throws InterruptedException,
-            ConnectionLostException {
-        return getDurationBuffered();
-    }
-
-    @Override
     public synchronized float getDurationBuffered() throws InterruptedException,
             ConnectionLostException {
         if (mode_ != PulseMode.POSITIVE && mode_ != PulseMode.NEGATIVE) {

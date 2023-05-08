@@ -266,11 +266,6 @@ public interface PulseInput extends Closeable {
     float getDurationBuffered() throws InterruptedException, ConnectionLostException;
 
     /**
-     * @deprecated Please use {@link #getDurationBuffered()} instead.
-     */
-    float waitPulseGetDuration() throws InterruptedException, ConnectionLostException;
-
-    /**
      * Gets the momentary frequency of the measured signal. When scaling is used, this is
      * compensated for here, so the true frequency of the signal will be returned.
      * <p>
