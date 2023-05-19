@@ -153,7 +153,7 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
         return null;
     }
 
-    private synchronized void waitForConnect(Connection connection) throws ConnectionLostException {
+    private synchronized void waitForConnect() throws ConnectionLostException {
         // In order to simplify the connection process in face of many different sequences of events
         // that might occur, we collapsed the entire sequence into one non-blocking method,
         // tryOpen(), which tries the entire process from the beginning, undoes everything if
@@ -306,7 +306,7 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
                 }
 
                 try {
-                    AccessoryConnectionBootstrap.this.waitForConnect(this);
+                    AccessoryConnectionBootstrap.this.waitForConnect();
                     instanceState_ = InstanceState.CONNECTED;
                 } catch (ConnectionLostException e) {
                     instanceState_ = InstanceState.DEAD;
