@@ -475,7 +475,7 @@ public class DeviceConnectionBootstrap extends BroadcastReceiver implements
                 permission_ = Permission.GRANTED;
             } else {
                 pendingIntent_ = PendingIntent.getBroadcast(activity_, 0, new Intent(
-                        ACTION_USB_PERMISSION), 0);
+                        ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE);
                 usbManager_.requestPermission(device_, pendingIntent_);
                 permission_ = Permission.PENDING;
             }

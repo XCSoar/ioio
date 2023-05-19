@@ -197,7 +197,7 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
             if (pendingIntent_ == null) {
                 Log.v(TAG, "Requesting permission.");
                 pendingIntent_ = PendingIntent.getBroadcast(activity_, 0, new Intent(
-                        ACTION_USB_PERMISSION), 0);
+                        ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE);
                 usbManager_.requestPermission(accessory, pendingIntent_);
             }
             return false;
