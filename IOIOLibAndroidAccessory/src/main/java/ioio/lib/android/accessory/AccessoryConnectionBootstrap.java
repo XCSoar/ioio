@@ -242,7 +242,7 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
                 Log.v(TAG, "Failed to open streams", e);
                 return false;
             } finally {
-                if (!success) {
+                if (!success && fileDescriptor_ != null) {
                     try {
                         fileDescriptor_.close();
                     } catch (IOException e) {
