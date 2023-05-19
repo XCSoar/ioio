@@ -118,14 +118,7 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
         notifyAll();
 
         // And this should kill any ongoing connections.
-        if (fileDescriptor_ != null) {
-            try {
-                fileDescriptor_.close();
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to close file descriptor.", e);
-            }
-            fileDescriptor_ = null;
-        }
+        closeFileDescriptor();
 
         if (pendingIntent_ != null) {
             pendingIntent_.cancel();
@@ -151,6 +144,19 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
     @Override
     public Object getExtra() {
         return null;
+    }
+
+    private synchronized void closeFileDescriptor() {
+        if (fileDescriptor_ == null)
+            return;
+
+        try {
+            fileDescriptor_.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to close file descriptor.", e);
+        }
+
+        fileDescriptor_ = null;
     }
 
     private synchronized void waitForConnect() throws ConnectionLostException {
@@ -241,14 +247,8 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
                 Log.v(TAG, "Failed to open streams", e);
                 return false;
             } finally {
-                if (!success && fileDescriptor_ != null) {
-                    try {
-                        fileDescriptor_.close();
-                    } catch (IOException e) {
-                        Log.e(TAG, "Failed to close file descriptor.", e);
-                    }
-                    fileDescriptor_ = null;
-                }
+                if (!success)
+                    closeFileDescriptor();
             }
         } finally {
             if (!success && pendingIntent_ != null) {
