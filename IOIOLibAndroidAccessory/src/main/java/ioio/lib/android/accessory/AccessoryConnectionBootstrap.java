@@ -29,7 +29,6 @@
 
 package ioio.lib.android.accessory;
 
-import ioio.lib.android.accessory.Adapter.UsbAccessoryInterface;
 import ioio.lib.api.IOIOConnection;
 import ioio.lib.api.exception.ConnectionLostException;
 import ioio.lib.impl.FixedReadBufferedInputStream;
@@ -53,6 +52,8 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.usb.UsbManager;
+import android.hardware.usb.UsbAccessory;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
@@ -62,22 +63,20 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
     private static final String ACTION_USB_PERMISSION = "ioio.lib.accessory.action.USB_PERMISSION";
 
     private ContextWrapper activity_;
-    private Adapter adapter_;
-    private Adapter.AbstractUsbManager usbManager_;
+    private UsbManager usbManager_;
     private boolean shouldTryOpen_ = false;
     private PendingIntent pendingIntent_;
     private ParcelFileDescriptor fileDescriptor_;
     private InputStream inputStream_;
     private OutputStream outputStream_;
 
-    public AccessoryConnectionBootstrap() throws NoRuntimeSupportException {
-        adapter_ = new Adapter();
+    public AccessoryConnectionBootstrap() {
     }
 
     @Override
     public void onCreate(ContextWrapper wrapper) {
         activity_ = wrapper;
-        usbManager_ = adapter_.getManager(wrapper);
+        usbManager_ = (UsbManager)wrapper.getSystemService(Context.USB_SERVICE);
         registerReceiver();
     }
 
@@ -184,8 +183,8 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
 
     private boolean tryOpen() {
         // Find the accessory.
-        UsbAccessoryInterface[] accessories = usbManager_.getAccessoryList();
-        UsbAccessoryInterface accessory = (accessories == null ? null : accessories[0]);
+        UsbAccessory[] accessories = usbManager_.getAccessoryList();
+        UsbAccessory accessory = (accessories == null ? null : accessories[0]);
 
         if (accessory == null) {
             Log.v(TAG, "No accessory found.");
