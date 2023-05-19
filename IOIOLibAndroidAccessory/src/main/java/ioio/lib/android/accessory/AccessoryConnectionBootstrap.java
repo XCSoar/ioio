@@ -159,7 +159,7 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
         fileDescriptor_ = null;
     }
 
-    private synchronized void waitForConnect() throws ConnectionLostException {
+    private synchronized void waitForOpen() throws ConnectionLostException {
         // In order to simplify the connection process in face of many different sequences of events
         // that might occur, we collapsed the entire sequence into one non-blocking method,
         // tryOpen(), which tries the entire process from the beginning, undoes everything if
@@ -177,6 +177,33 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
             forceWait();
         }
         throw new ConnectionLostException();
+    }
+
+    /**
+     * Do the "soft-open" handshake.  This method is not
+     * "synchronized" so it can be canceled by disconnect() without
+     * locking up.
+     */
+    private void waitForHandshake() throws IOException {
+        // Soft-open the connection
+        outputStream_.write(0x00);
+        outputStream_.flush();
+
+        while (inputStream_.read() != 1) {
+            trySleep(1000);
+        }
+    }
+
+    private void waitForConnect() throws ConnectionLostException {
+        waitForOpen();
+
+        try {
+            waitForHandshake();
+        } catch (IOException e) {
+            Log.v(TAG, "Failed to open streams", e);
+            closeFileDescriptor();
+            throw new ConnectionLostException();
+        }
     }
 
     private void forceWait() {
@@ -228,24 +255,8 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
                 inputStream_ = new FixedReadBufferedInputStream(new FileInputStream(fd), 1024);
                 outputStream_ = new BufferedOutputStream(new FileOutputStream(fd), 1024);
 
-                // Soft-open the connection
-                outputStream_.write(0x00);
-                outputStream_.flush();
-
-                // We're going to block now. We're counting on the IOIO to
-                // write back a byte, or otherwise we're locked until
-                // physical disconnection. This is a known OpenAccessory
-                // bug:
-                // http://code.google.com/p/android/issues/detail?id=20545
-                while (inputStream_.read() != 1) {
-                    trySleep(1000);
-                }
-
                 success = true;
                 return true;
-            } catch (IOException e) {
-                Log.v(TAG, "Failed to open streams", e);
-                return false;
             } finally {
                 if (!success)
                     closeFileDescriptor();
@@ -300,18 +311,16 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
 
         @Override
         public void waitForConnect() throws ConnectionLostException {
-            synchronized (AccessoryConnectionBootstrap.this) {
-                if (instanceState_ != InstanceState.INIT) {
-                    throw new IllegalStateException("waitForConnect() may only be called once");
-                }
+            if (instanceState_ != InstanceState.INIT) {
+                throw new IllegalStateException("waitForConnect() may only be called once");
+            }
 
-                try {
-                    AccessoryConnectionBootstrap.this.waitForConnect();
-                    instanceState_ = InstanceState.CONNECTED;
-                } catch (ConnectionLostException e) {
-                    instanceState_ = InstanceState.DEAD;
-                    throw e;
-                }
+            try {
+                AccessoryConnectionBootstrap.this.waitForConnect();
+                instanceState_ = InstanceState.CONNECTED;
+            } catch (ConnectionLostException e) {
+                instanceState_ = InstanceState.DEAD;
+                throw e;
             }
         }
 
