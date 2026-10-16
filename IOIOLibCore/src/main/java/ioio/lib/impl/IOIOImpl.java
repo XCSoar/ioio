@@ -59,7 +59,7 @@ import java.io.IOException;
 public class IOIOImpl implements IOIO, DisconnectListener {
     private static final String TAG = "IOIOImpl";
     private static final byte[] REQUIRED_INTERFACE_ID = new byte[]{'I', 'O',
-            'I', 'O', '0', '0', '0', '5'};
+            'I', 'O', '0', '0', '0', '3'};
     IOIOProtocol protocol_;
     ResourceManager resourceManager_;
     IncomingState incomingState_ = new IncomingState();
@@ -90,7 +90,7 @@ public class IOIOImpl implements IOIO, DisconnectListener {
                     if (disconnect_) {
                         throw new ConnectionLostException();
                     }
-                    protocol_ = new IOIOProtocol(connection_.getInputStream(),
+                    protocol_ = new IOIOProtocol(connection_.getInputStream(), connection_.canClose(),
                             connection_.getOutputStream(), incomingState_);
                     // Once this block exits, a disconnect will also involve
                     // softClose().
