@@ -65,9 +65,11 @@ public class SocketIOIOConnection implements IOIOConnection {
                 }
                 Log.v(TAG, "Creating server socket");
                 // Only local clients: adbd in the IOIO's ADB mode and
-                // "adb forward" both connect from the loopback address.
+                // "adb forward" both connect to 127.0.0.1.  Not
+                // InetAddress.getLoopbackAddress(): Android has it only
+                // since API 19.
                 server_ = new ServerSocket(port_, 50,
-                        InetAddress.getLoopbackAddress());
+                        InetAddress.getByAddress(new byte[] {127, 0, 0, 1}));
                 server_owned_by_connect_ = false;
             }
             Log.v(TAG, "Waiting for TCP connection");
