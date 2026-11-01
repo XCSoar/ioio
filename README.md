@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> **Discontinued.** XCSoar uses upstream [ytai/ioio](https://github.com/ytai/ioio) since v7.46. This fork is kept read-only so that XCSoar releases up to v7.45 can still be built (their `.gitmodules` point here, and some pinned commits exist only in this fork).
+
 <img alt="IOIO Logo" src="https://lh6.googleusercontent.com/-NtccMO1M7f4/UDhhwrx26UI/AAAAAAAAjTI/xwTI4Fb8xVQ/s887/ioio-logo.png">
 The IOIO is a board that provides a host machine the capability of interfacing with external hardware over a variety of commonly used protocols.
 The original IOIO board has been specifically designed to work with Android devices. The newer IOIO-OTG ("on the go") boards work with both Android devices and PC's (details [here](http://ytai-mer.blogspot.com/2012/05/second-generation-of-ioio-is-in-works.html)).
